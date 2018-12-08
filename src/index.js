@@ -1,5 +1,6 @@
 'use strict'
 
+const multihashing = require('multihashing-async')
 const TimeCache = require('time-cache')
 const pull = require('pull-stream')
 const lp = require('pull-length-prefixed')
@@ -28,7 +29,7 @@ class FloodSub extends BaseProtocol {
     super('libp2p:floodsub', multicodec, libp2p)
 
     /**
-     * Time based cache for sequence numbers.
+     * Time based cache for digests.
      *
      * @type {TimeCache}
      */
@@ -88,19 +89,23 @@ class FloodSub extends BaseProtocol {
 
   _processRpcMessages (msgs) {
     msgs.forEach((msg) => {
-      const seqno = utils.msgId(msg.from, msg.seqno)
-      // 1. check if I've seen the message, if yes, ignore
-      if (this.cache.has(seqno)) {
-        return
-      }
+      multihashing.digest(msg.data, 'sha1', (error, digest) => {
+        if (error) {
+          throw error
+        }
+        // 1. check if I've seen the message, if yes, ignore
+        if (this.cache.has(digest)) {
+          return
+        }
 
-      this.cache.put(seqno)
+        this.cache.put(digest)
 
-      // 2. emit to self
-      this._emitMessages(msg.topicIDs, [msg])
+        // 2. emit to self
+        this._emitMessages(msg.topicIDs, [msg])
 
-      // 3. propagate msg to others
-      this._forwardMessages(msg.topicIDs, [msg])
+        // 3. propagate msg to others
+        this._forwardMessages(msg.topicIDs, [msg])
+      })
     })
   }
 
@@ -162,18 +167,23 @@ class FloodSub extends BaseProtocol {
     const from = this.libp2p.peerInfo.id.toB58String()
 
     const buildMessage = (msg) => {
-      const seqno = utils.randomSeqno()
-      this.cache.put(utils.msgId(from, seqno))
-
       return {
         from: from,
         data: msg,
-        seqno: seqno,
         topicIDs: topics
       }
     }
 
     const msgObjects = messages.map(buildMessage)
+
+    msgObjects.forEach((msg) => {
+      multihashing.digest(msg.data, 'sha1', (error, digest) => {
+        if (error) {
+          throw error
+        }
+        this.cache.put(digest)
+      })
+    })
 
     // Emit to self if I'm interested
     this._emitMessages(topics, msgObjects)

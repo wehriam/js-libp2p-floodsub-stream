@@ -7,5 +7,5 @@ log.err = debug('libp2p:floodsub:error')
 
 module.exports = {
   log: log,
-  multicodec: '/floodsub/1.0.0'
+  multicodec: '/floodsub-stream/1.0.0'
 }

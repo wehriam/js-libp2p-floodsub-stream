@@ -1,31 +1,8 @@
 'use strict'
 
-const crypto = require('libp2p-crypto')
 const bs58 = require('bs58')
 
 exports = module.exports
-
-/**
- * Generatea random sequence number.
- *
- * @returns {Buffer}
- * @private
- */
-exports.randomSeqno = () => {
-  return crypto.randomBytes(20)
-}
-
-/**
- * Generate a message id, based on the `from` and `seqno`.
- *
- * @param {string} from
- * @param {Buffer} seqno
- * @returns {string}
- * @private
- */
-exports.msgId = (from, seqno) => {
-  return from + seqno.toString('hex')
-}
 
 /**
  * Check if any member of the first set is also a member

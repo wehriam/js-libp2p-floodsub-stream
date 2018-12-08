@@ -1,8 +1,8 @@
 {
-  "name": "libp2p-floodsub",
+  "name": "floodsub-stream",
   "version": "0.15.3",
-  "description": "libp2p-floodsub, also known as pubsub-flood or just dumbsub, this implementation of pubsub focused on delivering an API for Publish/Subscribe, but with no CastTree Forming (it just floods the network).",
-  "leadMaintainer": "Vasco Santos <vasco.santos@moxy.studio>",
+  "description": "libp2p-floodsub variant that delivers unique messages - the same message content will not be delivered twice",
+  "leadMaintainer": "John Wehr <johnwehr@gmail.com>",
   "main": "src/index.js",
   "scripts": {
     "lint": "aegir lint",
@@ -22,7 +22,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/libp2p/js-libp2p-floodsub.git"
+    "url": "git+https://github.com/wehriam/js-libp2p-floodsub-stream.git"
   },
   "keywords": [
     "IPFS",
@@ -34,9 +34,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/libp2p/js-libp2p-floodsub/issues"
+    "url": "https://github.com/wehriam/js-libp2p-floodsub-stream/issues"
   },
-  "homepage": "https://github.com/libp2p/js-libp2p-floodsub#readme",
+  "homepage": "https://github.com/wehriam/js-libp2p-floodsub-stream#readme",
   "devDependencies": {
     "aegir": "^17.1.1",
     "benchmark": "^2.1.4",
@@ -57,6 +57,7 @@
     "length-prefixed-stream": "^1.6.0",
     "libp2p-crypto": "~0.14.1",
     "lodash": "^4.17.11",
+    "multihashing-async": "~0.5.1",
     "protons": "^1.0.1",
     "pull-pushable": "^2.2.0",
     "time-cache": "~0.3.0"

@@ -6,26 +6,6 @@ const expect = require('chai').expect
 const utils = require('../src/utils')
 
 describe('utils', () => {
-  it('randomSeqno', () => {
-    const first = utils.randomSeqno()
-    const second = utils.randomSeqno()
-
-    expect(first).to.have.length(20)
-    expect(second).to.have.length(20)
-    expect(first).to.not.eql(second)
-  })
-
-  it('msgId', () => {
-    expect(utils.msgId('hello', Buffer.from('world'))).to.be.eql('hello776f726c64')
-  })
-
-  it('msgId should not generate same ID for two different buffers', () => {
-    const peerId = 'QmPNdSYk5Rfpo5euNqwtyizzmKXMNHdXeLjTQhcN4yfX22'
-    const msgId0 = utils.msgId(peerId, Buffer.from('15603533e990dfde', 'hex'))
-    const msgId1 = utils.msgId(peerId, Buffer.from('15603533e990dfe0', 'hex'))
-    expect(msgId0).to.not.eql(msgId1)
-  })
-
   it('anyMatch', () => {
     [
       [[1, 2, 3], [4, 5, 6], false],

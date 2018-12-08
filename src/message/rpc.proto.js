@@ -12,7 +12,6 @@ message RPC {
   message Message {
     optional bytes from = 1;
     optional bytes data = 2;
-    optional bytes seqno = 3;
-    repeated string topicIDs = 4; 
+    repeated string topicIDs = 3; 
   }
 }`

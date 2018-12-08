@@ -9,6 +9,7 @@ const expect = chai.expect
 const parallel = require('async/parallel')
 const series = require('async/series')
 const times = require('lodash/times')
+const crypto = require('libp2p-crypto')
 
 const FloodSub = require('../src')
 const utils = require('./utils')
@@ -118,6 +119,8 @@ describe('basics between 2 nodes', () => {
     })
 
     it('Publish 10 msg to a topic:Z in nodeB', (done) => {
+      const msgs = Array.from(Array(10), () => crypto.randomBytes(8))
+      const msgStrings = msgs.map((b) => b.toString())
       let counter = 0
 
       fsB.once('Z', shouldNotHappen)
@@ -125,9 +128,8 @@ describe('basics between 2 nodes', () => {
       fsA.on('Z', receivedMsg)
 
       function receivedMsg (msg) {
-        expect(msg.data.toString()).to.equal('banana')
+        expect(msgStrings).to.include(msg.data.toString())
         expect(msg.from).to.be.eql(fsB.libp2p.peerInfo.id.toB58String())
-        expect(Buffer.isBuffer(msg.seqno)).to.be.true()
         expect(msg.topicIDs).to.be.eql(['Z'])
 
         if (++counter === 10) {
@@ -137,10 +139,13 @@ describe('basics between 2 nodes', () => {
         }
       }
 
-      times(10, () => fsB.publish('Z', Buffer.from('banana')))
+      let i = 0
+      times(10, () => fsB.publish('Z', msgs[i++]))
     })
 
     it('Publish 10 msg to a topic:Z in nodeB as array', (done) => {
+      const msgs = Array.from(Array(10), () => crypto.randomBytes(8))
+      const msgStrings = msgs.map((b) => b.toString())
       let counter = 0
 
       fsB.once('Z', shouldNotHappen)
@@ -148,9 +153,8 @@ describe('basics between 2 nodes', () => {
       fsA.on('Z', receivedMsg)
 
       function receivedMsg (msg) {
-        expect(msg.data.toString()).to.equal('banana')
+        expect(msgStrings).to.include(msg.data.toString())
         expect(msg.from).to.be.eql(fsB.libp2p.peerInfo.id.toB58String())
-        expect(Buffer.isBuffer(msg.seqno)).to.be.true()
         expect(msg.topicIDs).to.be.eql(['Z'])
 
         if (++counter === 10) {
@@ -160,8 +164,6 @@ describe('basics between 2 nodes', () => {
         }
       }
 
-      let msgs = []
-      times(10, () => msgs.push(Buffer.from('banana')))
       fsB.publish('Z', msgs)
     })
 

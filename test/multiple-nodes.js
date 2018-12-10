@@ -6,6 +6,7 @@ const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
 const parallel = require('async/parallel')
+const crypto = require('libp2p-crypto')
 
 const FloodSub = require('../src')
 const utils = require('./utils')
@@ -142,14 +143,17 @@ describe('multiple nodes (more than 2)', () => {
       it('publish array on node a', (done) => {
         let counter = 0
 
+        const msgs = Array.from(Array(2), () => crypto.randomBytes(8))
+        const msgStrings = msgs.map((b) => b.toString())
+
         a.ps.on('Z', incMsg)
         b.ps.on('Z', incMsg)
         c.ps.on('Z', incMsg)
 
-        a.ps.publish('Z', [Buffer.from('hey'), Buffer.from('hey')])
+        a.ps.publish('Z', msgs)
 
         function incMsg (msg) {
-          expect(msg.data.toString()).to.equal('hey')
+          expect(msgStrings).to.include(msg.data.toString())
           check()
         }
 
@@ -179,10 +183,13 @@ describe('multiple nodes (more than 2)', () => {
           b.ps.on('Z', incMsg)
           c.ps.on('Z', incMsg)
 
-          b.ps.publish('Z', Buffer.from('hey'))
+          const msgs = Array.from(Array(2), () => crypto.randomBytes(8))
+          const msgStrings = msgs.map((b) => b.toString())
+
+          b.ps.publish('Z', msgs[0])
 
           function incMsg (msg) {
-            expect(msg.data.toString()).to.equal('hey')
+            expect(msg.data.toString()).to.equal(msgStrings[0])
             check()
           }
 

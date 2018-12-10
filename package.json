@@ -1,6 +1,6 @@
 {
   "name": "floodsub-stream",
-  "version": "0.15.3",
+  "version": "0.15.4",
   "description": "libp2p-floodsub variant that delivers unique messages - the same message content will not be delivered twice",
   "leadMaintainer": "John Wehr <johnwehr@gmail.com>",
   "main": "src/index.js",
@@ -51,8 +51,10 @@
     "peer-info": "~0.15.0"
   },
   "dependencies": {
+    "array-buffer-to-hex": "^1.0.0",
     "async": "^2.6.1",
     "bs58": "^4.0.1",
+    "crypto-digest-sync": "^1.0.0",
     "debug": "^4.1.0",
     "length-prefixed-stream": "^1.6.0",
     "libp2p-crypto": "~0.14.1",

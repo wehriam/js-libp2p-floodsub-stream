@@ -1,6 +1,7 @@
 'use strict'
 
-const multihashing = require('multihashing-async')
+const sha256 = require('crypto-digest-sync/sha256')
+const arrayBufferToHex = require('array-buffer-to-hex')
 const TimeCache = require('time-cache')
 const pull = require('pull-stream')
 const lp = require('pull-length-prefixed')
@@ -89,23 +90,20 @@ class FloodSub extends BaseProtocol {
 
   _processRpcMessages (msgs) {
     msgs.forEach((msg) => {
-      multihashing.digest(msg.data, 'sha1', (error, digest) => {
-        if (error) {
-          throw error
-        }
-        // 1. check if I've seen the message, if yes, ignore
-        if (this.cache.has(digest)) {
-          return
-        }
+      const digest = arrayBufferToHex(sha256(msg.data))
 
-        this.cache.put(digest)
+      // 1. check if I've seen the message, if yes, ignore
+      if (this.cache.has(digest)) {
+        return
+      }
 
-        // 2. emit to self
-        this._emitMessages(msg.topicIDs, [msg])
+      this.cache.put(digest)
 
-        // 3. propagate msg to others
-        this._forwardMessages(msg.topicIDs, [msg])
-      })
+      // 2. emit to self
+      this._emitMessages(msg.topicIDs, [msg])
+
+      // 3. propagate msg to others
+      this._forwardMessages(msg.topicIDs, [msg])
     })
   }
 
@@ -167,6 +165,8 @@ class FloodSub extends BaseProtocol {
     const from = this.libp2p.peerInfo.id.toB58String()
 
     const buildMessage = (msg) => {
+      const digest = arrayBufferToHex(sha256(msg.data))
+      this.cache.put(digest)
       return {
         from: from,
         data: msg,
@@ -175,15 +175,6 @@ class FloodSub extends BaseProtocol {
     }
 
     const msgObjects = messages.map(buildMessage)
-
-    msgObjects.forEach((msg) => {
-      multihashing.digest(msg.data, 'sha1', (error, digest) => {
-        if (error) {
-          throw error
-        }
-        this.cache.put(digest)
-      })
-    })
 
     // Emit to self if I'm interested
     this._emitMessages(topics, msgObjects)

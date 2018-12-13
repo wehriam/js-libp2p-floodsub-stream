@@ -1,6 +1,6 @@
 {
   "name": "floodsub-stream",
-  "version": "0.15.4",
+  "version": "0.15.5",
   "description": "libp2p-floodsub variant that delivers unique messages - the same message content will not be delivered twice",
   "leadMaintainer": "John Wehr <johnwehr@gmail.com>",
   "main": "src/index.js",

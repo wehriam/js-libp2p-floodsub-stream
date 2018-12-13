@@ -164,12 +164,12 @@ class FloodSub extends BaseProtocol {
 
     const from = this.libp2p.peerInfo.id.toB58String()
 
-    const buildMessage = (msg) => {
-      const digest = arrayBufferToHex(sha256(msg.data))
+    const buildMessage = (data) => {
+      const digest = arrayBufferToHex(sha256(data))
       this.cache.put(digest)
       return {
         from: from,
-        data: msg,
+        data: data,
         topicIDs: topics
       }
     }
